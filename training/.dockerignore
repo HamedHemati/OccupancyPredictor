@@ -1,0 +1,30 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore notebooks (useful if you don't need them in the image)
+*.ipynb
+
+# Ignore tests
+tests/
+
+# Ignore configuration files that shouldn't be in the container
+*.yaml
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore Dockerfile (no need to include Docker configuration inside the image)
+Dockerfile
+
+# Ignore other development or IDE-related files
+*.log
+*.swp
+.idea/
+.vscode/

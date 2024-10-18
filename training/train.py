@@ -10,12 +10,24 @@ from room_occupancy.plot_utils import plot_and_save_roc
 
 
 def train(args):
-    # Load train and test sets
-    X_train, y_train = load_dataset(args.trainset_path)
-    X_test, y_test = load_dataset(args.testset_path)
+    # Load train and test sets (also check env variables for containerized training)
+    if os.environ.get("TRAINING_DATA"):
+        X_train, y_train = load_dataset(os.environ["TRAINING_DATA"])
+    else:
+        X_train, y_train = load_dataset(args.trainset_path)
 
+    if os.environ.get("TEST_DATA"):
+        X_test, y_test = load_dataset(os.environ["TEST_DATA"])
+    else:
+        X_test, y_test = load_dataset(args.testset_path)
+
+    # Random seed for reproducibility
+    if os.environ.get("SEED"):
+        seed = int(os.environ.get("SEED"))
+    else:
+        seed = args.seed
     # Initialize model (XGBoost)
-    model = get_model(random_seed=args.seed)
+    model = get_model(random_seed=seed)
 
     # Perform Random Search with cross-validation
     search_space = get_default_search_space()
@@ -26,7 +38,7 @@ def train(args):
         scoring="roc_auc",
         cv=3,
         verbose=True,
-        random_state=args.seed,
+        random_state=seed,
         n_jobs=-1,  # Use all available processors
     )
 
@@ -50,9 +62,14 @@ def train(args):
     plt_roc = plot_and_save_roc(y_test, y_logits, metrics)
 
     # Save model and plots
-    os.makedirs(args.save_path, exist_ok=True)
-    best_model.get_booster().save_model(os.path.join(args.save_path, "model.bin"))
-    plt_roc.savefig(os.path.join(args.save_path, "roc_curve.png"))
+    save_path = args.save_path
+    if os.environ.get("SAVE_PATH"):
+        save_path = os.environ.get("SAVE_PATH")
+    else:
+        save_path = args.save_path
+    os.makedirs(save_path, exist_ok=True)
+    best_model.get_booster().save_model(os.path.join(save_path, "model.bin"))
+    plt_roc.savefig(os.path.join(save_path, "roc_curve.png"))
 
 
 if __name__ == "__main__":
