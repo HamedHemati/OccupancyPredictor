@@ -1,7 +1,5 @@
 # Occupancy Predictor
 
-TBA ...
-
 ## Repository Structure
 
     ├── training                      # Training sub-directory
