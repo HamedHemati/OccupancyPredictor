@@ -1,0 +1,36 @@
+# For the inference pods
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inference-api
+  template:
+    metadata:
+      labels:
+        app: inference-api
+    spec:
+      containers:
+      - name: occupancy-inference
+        image: neuperc/occupancy_inference:latest
+        ports:
+        - containerPort: 9000  # Port for the Flask API in servce_model
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inference-api-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: inference-api
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+
