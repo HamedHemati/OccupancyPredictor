@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Parser
 parser = argparse.ArgumentParser()
-parser.add_argument("--saved_model_path", type=str, default="./output/model.bin")
+parser.add_argument("--saved_model_path", type=str, default="./inference/pretrained_models/best_model.bin")
 args = parser.parse_args()
 
 # Load pre-trained model
