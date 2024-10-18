@@ -4,22 +4,21 @@ import logging
 import time
 import numpy as np
 from flask import Flask, request, jsonify
-
+from pythonjsonlogger import jsonlogger
 from ro_inference.model import load_model
 from ro_inference.inference_utils import convert_json_to_model_input
-
 
 # Initialize flask app for model serving
 app = Flask(__name__)
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(name)s %(levelname)s %(message)s",
-    handlers=[logging.StreamHandler()],  # Logs messages to console
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+logHandler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter()
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
+logger.setLevel(logging.INFO)
 
 # Parser
 parser = argparse.ArgumentParser()
@@ -32,6 +31,7 @@ model = load_model(args.saved_model_path)
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    start_time = time.time()
     try:
         # Get request data (JSON format)
         data = request.get_json(force=True)
@@ -41,9 +41,18 @@ def predict():
         preds = model.predict(input_DMatrix)
         response = {"prediction": preds[0].tolist()}
 
-        # Log prediction
+        # Calculate response time
+        response_time = time.time() - start_time
+
+        # Log successful prediction with log_type
         logger.info(
-            json.dumps({"input": data["input"], "prediction": response["prediction"], "timestamp": time.time()})
+            {
+                "log_type": "inference_api_prediction",
+                "status": "success",
+                "prediction": response["prediction"],
+                "timestamp": time.time(),
+                "response_time": response_time,
+            }
         )
 
         time.sleep(0.1)  # TODO: I've added this for testing and benchmarking purposes, remove for production
@@ -51,7 +60,17 @@ def predict():
         return jsonify(response)
 
     except Exception as e:
-        logger.error(f"Error happened during prediction: {str(e)}")
+        response_time = time.time() - start_time
+        # Log error with log_type
+        logger.error(
+            {
+                "log_type": "inference_api_prediction",
+                "status": "failure",
+                "error_message": str(e),
+                "timestamp": time.time(),
+                "response_time": response_time,
+            }
+        )
         return jsonify({"error": str(e)}), 500
 
 
