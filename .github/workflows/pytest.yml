@@ -1,0 +1,24 @@
+name: Run Pytest Tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout 
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+
+    # Install dependencies and Run Pytest
+    - name: Install dependencies and Run Pytest
+      run: |
+        pip install -r requirements.txt
+        pytest
