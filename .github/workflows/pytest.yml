@@ -1,6 +1,9 @@
 name: Run Pytest Tests
 
-on: [push]
+on: 
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
