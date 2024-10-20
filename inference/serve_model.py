@@ -1,10 +1,10 @@
 import argparse
-import json
 import logging
 import time
 import numpy as np
 from flask import Flask, request, jsonify
 from pythonjsonlogger import jsonlogger
+
 from ro_inference.model import load_model
 from ro_inference.inference_utils import convert_json_to_model_input
 
@@ -35,6 +35,7 @@ def predict():
     try:
         # Get request data (JSON format)
         data = request.get_json(force=True)
+        temperature = data["input"][0]
 
         # Make prediction
         input_DMatrix = convert_json_to_model_input(np.array(data["input"]).reshape(1, -1))
@@ -42,16 +43,26 @@ def predict():
         response = {"prediction": preds[0].tolist()}
 
         # Calculate response time
-        response_time = time.time() - start_time
+        current_time = time.time()
+        response_time = current_time - start_time
 
-        # Log successful prediction with log_type
+        # Log prediction
         logger.info(
             {
                 "log_type": "inference_api_prediction",
                 "status": "success",
                 "prediction": response["prediction"],
-                "timestamp": time.time(),
+                "timestamp": current_time,
                 "response_time": response_time,
+            }
+        )
+
+        # Log stat
+        logger.info(
+            {
+                "log_type": "inference_api_stat",
+                "temperature": temperature,
+                "timestamp": current_time,
             }
         )
 
