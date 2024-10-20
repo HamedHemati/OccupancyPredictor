@@ -95,7 +95,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.24
         env:
         - name: discovery.type
           value: "single-node"
@@ -135,10 +135,16 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.10.0
+        image: docker.elastic.co/kibana/kibana:7.17.24
         env:
         - name: ELASTICSEARCH_HOSTS
           value: "http://elasticsearch.logging.svc.cluster.local:9200"
+        - name: XPACK_ALERTING_ENABLED
+          value: "true"
+        - name: XPACK_ACTIONS_ENABLED
+          value: "true"
+        - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+          value: "ETOhnf5nCz6oIEIpijm5GZ3wzYMV0MN26+t6jVfUNhI="
         ports:
         - containerPort: 5601
 ---
