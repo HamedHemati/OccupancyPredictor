@@ -12,7 +12,13 @@ headers = {"Content-Type": "application/json"}
 
 def generate_random_input():
     """Generate random input data for the API"""
-    return [random.uniform(0, 1000) for _ in range(5)]  # Since we have 5 features
+    return [
+        random.uniform(10, 20),
+        random.uniform(31, 35),
+        random.uniform(200, 400),
+        random.uniform(300, 500),
+        random.uniform(0.001, 0.002),
+    ]
 
 
 def send_request():
