@@ -39,7 +39,7 @@ def train(args):
         cv=3,
         verbose=True,
         random_state=seed,
-        n_jobs=-1,  # Use all available processors
+        n_jobs=-1,  # -1: to use all available processors
     )
 
     # Fit best hyparameters using RandomizedSearchCV
