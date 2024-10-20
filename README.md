@@ -25,7 +25,7 @@
     ├── data                          # Data directory
       ├── ...                       
 
-## Deployment (Kuberentes)
+## Deployment (Kubernetes)
 
 To deploy the services to Kubernetes, use the following commands:
 
